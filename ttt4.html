@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style type ="text/css">
+        div.square {display: inline-block; height: 100px; width: 100px;
+             margin: 5px;border: 1px solid #000;
+             font-size:75px; text-align: center; line-height: 100px;}
+        div.square:hover {background-color:aqua}
+        div.container {display: flex; max-width: 340px;flex-wrap: wrap;
+             margin-left:auto; margin-right:auto;}
+        h1#title {text-align: center; font-size: 50px}
+        div.info {display: block; width: 340px; height: 40px ;text-align: center;
+                 margin-left:auto; margin-right:auto; border: 3px solid red; 
+                 font-size: 30px; padding: 20px 0px; margin-top: 20px; margin-bottom: 20px;}
+        div#buttonContainer {text-align: center}
+        input#clear{font-size: 50px}
+    </style>
+</head>
+<body>
+    <h1 id = "title">Tic Tac Toe!</h1>
+    <div class= "info" id ="turn"></div>
+    <div class = "container">
+        <script>
+            const NUM_SQUARES = 9;
+            for (i=0; i<NUM_SQUARES; i++)
+            {
+            id = "sq"+i;
+            document.write( "<div class='square' id='" + id + "'></div>" );
+            }
+        </script>
+    </div>
+    <div class ="info" id ="results"></div>
+    <div id = buttonContainer>
+        <input type = 'button' id = 'clear' value = "CLEAR">
+    </div>
+
+    <script>
+        
+        squares = document.getElementsByClassName('square')
+        Xturn = 1 //variable for determining whos turn it is
+        moves = ["-","-","-","-","-","-","-","-", "-"]
+        winCons = ["-","-","-","-","-","-","-","-"]
+        over = false; //false if game is not over, true if it is
+
+        //adds click functionality to all squares
+        for (i = 0; i <squares.length; i++)
+            {
+                squares[i].addEventListener("click",clicked)
+            }
+
+        //clears board and randomly decides who goes first
+        function startGame()
+        {
+            moves = ["-","-","-","-","-","-","-","-", "-"]
+            winCons = ["-","-","-","-","-","-","-","-"]
+            over = false;
+            document.getElementById("results").innerHTML = ""
+            for (i = 0; i < squares.length; i++)
+            {
+                squares[i].innerHTML = ""
+            }
+            Xturn = Math.random()
+            if (Xturn > 0.5)
+            {
+                document.getElementById("turn").innerHTML = "X Player's Turn";
+            }
+            else
+            {
+                document.getElementById("turn").innerHTML = "O Player's Turn";
+            }
+        }
+
+
+        window.onload = function() 
+        {
+           startGame()
+           btn = document.getElementById('clear')
+           btn.onclick = startGame
+        }
+
+
+        //defines what happens when a square is clicked
+        function clicked(event)
+        {
+            id = ((event.target.id).toString())
+            alert("this is square " + id.charAt(2))
+
+            //updates empty squares to X or O if not full already
+            if(Xturn > 0.5 && event.target.innerHTML == "" && over == false)
+            {
+                event.target.innerHTML = "X";
+                Xturn = 0;
+                document.getElementById("turn").innerHTML = "O Player's Turn";
+            }
+
+            else if (Xturn < 0.5 && event.target.innerHTML == "" && over == false)
+            {
+                event.target.innerHTML = "O";
+                Xturn = 1;
+                document.getElementById("turn").innerHTML = "X Player's Turn";
+            }
+
+            //gets array of played moves with hyphens representing empty squares
+            moves.forEach((value,index) =>
+            {
+                if (squares[index].innerHTML == "")
+                {
+                    moves[index] = "-"
+                }
+                else
+                {
+                    moves[index] = squares[index].innerHTML
+                }
+            })
+
+            //gets potential win cons from moves
+            winCons[0] = moves[0] + moves[1] + moves[2]
+            winCons[1] = moves[3] + moves[4] + moves[5]
+            winCons[2] = moves[6] + moves[7] + moves[8]
+
+            winCons[3] = moves[0] + moves[3] + moves[6]
+            winCons[4] = moves[1] + moves[4] + moves[7]
+            winCons[5] = moves[2] + moves[5] + moves[8]
+            winCons[6] = moves[0] + moves[4] + moves[8]
+            winCons[7] = moves[2] + moves[4] + moves[6]
+
+            empties = 0; //keeps track of how many potential win cons have hyphens
+            //checks for win conditions
+            winCons.forEach(value =>
+            {
+                if(value == "XXX")
+                {
+                    document.getElementById("turn").innerHTML = "Game Over";
+                    document.getElementById("results").innerHTML = "X player wins!"
+                    over = true
+                }
+                else if (value == "OOO")
+                {
+                    document.getElementById("turn").innerHTML = "Game Over";
+                    document.getElementById("results").innerHTML = "O player wins!"
+                    over = true
+                }
+                else if (value.includes("-"))
+                {
+                    empties++;
+                }
+            })
+            
+            //if board is full stalemate
+            if (empties == 0)
+            {
+                document.getElementById("turn").innerHTML = "Game Over";
+                document.getElementById("results").innerHTML = "Stalemate"
+                over = true
+            }
+        }
+    </script>
+</body>
+</html>
